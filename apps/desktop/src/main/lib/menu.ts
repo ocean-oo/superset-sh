@@ -62,32 +62,6 @@ export function createApplicationMenu() {
 			label: "Help",
 			submenu: [
 				{
-					label: "Documentation",
-					click: () => {
-						shell.openExternal(COMPANY.DOCS_URL);
-					},
-				},
-				{ type: "separator" },
-				{
-					label: "Contact Us",
-					click: () => {
-						shell.openExternal(COMPANY.MAIL_TO);
-					},
-				},
-				{
-					label: "Report Issue",
-					click: () => {
-						shell.openExternal(COMPANY.REPORT_ISSUE_URL);
-					},
-				},
-				{
-					label: "Join Discord",
-					click: () => {
-						shell.openExternal(COMPANY.DISCORD_URL);
-					},
-				},
-				{ type: "separator" },
-				{
 					label: "Keyboard Shortcuts",
 					accelerator: showHotkeysAccelerator,
 					click: () => {
@@ -145,12 +119,6 @@ export function createApplicationMenu() {
 					accelerator: openSettingsAccelerator,
 					click: () => {
 						menuEmitter.emit("open-settings");
-					},
-				},
-				{
-					label: "Check for Updates...",
-					click: () => {
-						checkForUpdatesInteractive();
 					},
 				},
 				{ type: "separator" },

@@ -326,16 +326,7 @@ function ProjectPage() {
 								{step === "setup" && (
 									<>
 										These commands run automatically when a workspace is
-										created.{" "}
-										<a
-											href="https://docs.superset.sh/setup-teardown-scripts"
-											target="_blank"
-											rel="noopener noreferrer"
-											className="group inline-flex items-center gap-0.5 underline underline-offset-2 hover:text-foreground transition-colors"
-										>
-											Read our docs
-											<HiChevronRight className="size-3 transition-transform duration-150 group-hover:translate-x-0.5" />
-										</a>
+										created.
 									</>
 								)}
 							</p>

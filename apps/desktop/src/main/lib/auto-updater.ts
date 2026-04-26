@@ -107,31 +107,9 @@ export function getUpdateStatus(): AutoUpdateStatusEvent {
 }
 
 export function installUpdate(): void {
-	if (env.NODE_ENV === "development") {
-		console.info("[auto-updater] Install skipped in dev mode");
-		emitStatus(AUTO_UPDATE_STATUS.IDLE);
-		return;
-	}
-	// MacUpdater.quitAndInstall() registers a fresh native-updater
-	// `update-downloaded` listener each time it runs before Squirrel.Mac has
-	// finished staging. Without this guard, repeat clicks fan out into
-	// parallel quitAndInstall calls once Squirrel fires — racing to swap
-	// the binary and leaving the app on the old version.
-	if (isInstalling) {
-		console.info(
-			"[auto-updater] Install already in progress, ignoring duplicate request",
-		);
-		return;
-	}
-	if (currentStatus !== AUTO_UPDATE_STATUS.READY) {
-		console.warn(
-			`[auto-updater] Install ignored: update not ready (status=${currentStatus})`,
-		);
-		return;
-	}
-	isInstalling = true;
-	setSkipQuitConfirmation();
-	autoUpdater.quitAndInstall(false, true);
+	console.info("[auto-updater] Install skipped for local build");
+	emitStatus(AUTO_UPDATE_STATUS.IDLE);
+	return;
 }
 
 export function dismissUpdate(): void {
@@ -140,79 +118,16 @@ export function dismissUpdate(): void {
 }
 
 export function checkForUpdates(): void {
-	if (env.NODE_ENV === "development" || !IS_AUTO_UPDATE_PLATFORM) {
-		return;
-	}
-	isDismissed = false;
-	emitStatus(AUTO_UPDATE_STATUS.CHECKING);
-	autoUpdater.checkForUpdates().catch((error) => {
-		if (isNetworkError(error)) {
-			console.info("[auto-updater] Network unavailable, will retry later");
-			emitStatus(AUTO_UPDATE_STATUS.IDLE);
-			return;
-		}
-		console.error("[auto-updater] Failed to check for updates:", error);
-		emitStatus(AUTO_UPDATE_STATUS.ERROR, undefined, error.message);
-	});
+	return;
 }
 
 export function checkForUpdatesInteractive(): void {
-	if (env.NODE_ENV === "development") {
-		dialog.showMessageBox({
-			type: "info",
-			title: "Updates",
-			message: "Auto-updates are disabled in development mode.",
-		});
-		return;
-	}
-	if (!IS_AUTO_UPDATE_PLATFORM) {
-		dialog.showMessageBox({
-			type: "info",
-			title: "Updates",
-			message: "Auto-updates are only available on macOS and Linux.",
-		});
-		return;
-	}
-
-	isDismissed = false;
-	emitStatus(AUTO_UPDATE_STATUS.CHECKING);
-
-	autoUpdater
-		.checkForUpdates()
-		.then((result) => {
-			if (
-				!result?.updateInfo ||
-				result.updateInfo.version === app.getVersion()
-			) {
-				emitStatus(AUTO_UPDATE_STATUS.IDLE);
-				dialog.showMessageBox({
-					type: "info",
-					title: "No Updates",
-					message: "You're up to date!",
-					detail: `Version ${app.getVersion()} is the latest version.`,
-				});
-			}
-		})
-		.catch((error) => {
-			if (isNetworkError(error)) {
-				console.info("[auto-updater] Network unavailable");
-				emitStatus(AUTO_UPDATE_STATUS.IDLE);
-				dialog.showMessageBox({
-					type: "info",
-					title: "No Internet Connection",
-					message:
-						"Unable to check for updates. Please check your internet connection.",
-				});
-				return;
-			}
-			console.error("[auto-updater] Failed to check for updates:", error);
-			emitStatus(AUTO_UPDATE_STATUS.ERROR, undefined, error.message);
-			dialog.showMessageBox({
-				type: "error",
-				title: "Update Error",
-				message: "Failed to check for updates. Please try again later.",
-			});
-		});
+	dialog.showMessageBox({
+		type: "info",
+		title: "Updates",
+		message: "Auto-updates are disabled for local custom builds.",
+	});
+	return;
 }
 
 export function simulateUpdateReady(): void {
@@ -238,89 +153,5 @@ export function simulateError(): void {
 }
 
 export function setupAutoUpdater(): void {
-	if (env.NODE_ENV === "development" || !IS_AUTO_UPDATE_PLATFORM) {
-		return;
-	}
-
-	autoUpdater.autoDownload = true;
-	autoUpdater.autoInstallOnAppQuit = true;
-	autoUpdater.disableDifferentialDownload = true;
-
-	// Allow downgrade for prerelease builds so users can switch back to stable
-	autoUpdater.allowDowngrade = IS_PRERELEASE;
-
-	// Use generic provider with explicit feed URL so electron-updater can request
-	// the correct manifest for the current platform from GitHub release assets.
-	autoUpdater.setFeedURL({
-		provider: "generic",
-		url: UPDATE_FEED_URL,
-	});
-
-	console.info(
-		`[auto-updater] Initialized: version=${app.getVersion()}, channel=${IS_PRERELEASE ? "canary" : "stable"}, feedURL=${UPDATE_FEED_URL}`,
-	);
-
-	autoUpdater.on("error", (error) => {
-		// Allow retry if Squirrel surfaces an error instead of actually quitting.
-		isInstalling = false;
-		if (isNetworkError(error)) {
-			console.info("[auto-updater] Network unavailable, will retry later");
-			emitStatus(AUTO_UPDATE_STATUS.IDLE);
-			return;
-		}
-		console.error(
-			`[auto-updater] Error during update (currentVersion=${app.getVersion()}):`,
-			error?.message || error,
-		);
-		void clearCachedUpdate(`error: ${error?.message ?? "unknown"}`);
-		emitStatus(AUTO_UPDATE_STATUS.ERROR, undefined, error.message);
-	});
-
-	autoUpdater.on("checking-for-update", () => {
-		console.info(
-			`[auto-updater] Checking for updates... (currentVersion=${app.getVersion()}, feedURL=${UPDATE_FEED_URL})`,
-		);
-		emitStatus(AUTO_UPDATE_STATUS.CHECKING);
-	});
-
-	autoUpdater.on("update-available", (info) => {
-		console.info(
-			`[auto-updater] Update available: ${app.getVersion()} → ${info.version} (files: ${info.files?.map((f: { url: string }) => f.url).join(", ")})`,
-		);
-		emitStatus(AUTO_UPDATE_STATUS.DOWNLOADING, info.version);
-	});
-
-	autoUpdater.on("update-not-available", (info) => {
-		console.info(
-			`[auto-updater] No updates available (currentVersion=${app.getVersion()}, latestVersion=${info.version})`,
-		);
-		emitStatus(AUTO_UPDATE_STATUS.IDLE);
-	});
-
-	autoUpdater.on("download-progress", (progress) => {
-		console.info(
-			`[auto-updater] Download progress: ${progress.percent.toFixed(1)}% (${(progress.transferred / 1024 / 1024).toFixed(1)}MB / ${(progress.total / 1024 / 1024).toFixed(1)}MB)`,
-		);
-	});
-
-	autoUpdater.on("update-downloaded", (info) => {
-		console.info(
-			`[auto-updater] Update downloaded: ${app.getVersion()} → ${info.version}. Ready to install.`,
-		);
-		emitStatus(AUTO_UPDATE_STATUS.READY, info.version);
-	});
-
-	const interval = setInterval(checkForUpdates, UPDATE_CHECK_INTERVAL_MS);
-	interval.unref();
-
-	if (app.isReady()) {
-		void checkForUpdates();
-	} else {
-		app
-			.whenReady()
-			.then(() => checkForUpdates())
-			.catch((error) => {
-				console.error("[auto-updater] Failed to start update checks:", error);
-			});
-	}
+	return;
 }

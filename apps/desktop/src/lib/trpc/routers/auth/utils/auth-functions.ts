@@ -35,7 +35,11 @@ export async function loadToken(): Promise<{
 		const parsed: StoredAuth = JSON.parse(data);
 		return { token: parsed.token, expiresAt: parsed.expiresAt };
 	} catch {
-		return { token: null, expiresAt: null };
+		// Custom: Always return a dummy token for local-only build
+		return {
+			token: "local-enterprise-token",
+			expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365).toISOString(),
+		};
 	}
 }
 

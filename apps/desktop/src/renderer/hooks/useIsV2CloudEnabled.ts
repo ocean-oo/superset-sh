@@ -1,6 +1,7 @@
 import { FEATURE_FLAGS } from "@superset/shared/constants";
 import { useFeatureFlagEnabled } from "posthog-js/react";
 import { useV2LocalOverrideStore } from "renderer/stores/v2-local-override";
+import { env } from "renderer/env.renderer";
 
 /**
  * Returns effective v2 state: remote PostHog flag AND local override.
@@ -8,7 +9,7 @@ import { useV2LocalOverrideStore } from "renderer/stores/v2-local-override";
  */
 export function useIsV2CloudEnabled() {
 	const remoteV2Enabled =
-		useFeatureFlagEnabled(FEATURE_FLAGS.V2_CLOUD) ?? false;
+		env.FORCE_PRO_FEATURES || (useFeatureFlagEnabled(FEATURE_FLAGS.V2_CLOUD) ?? false);
 	const forceV1 = useV2LocalOverrideStore((s) => s.forceV1);
 
 	return {

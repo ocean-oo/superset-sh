@@ -11,6 +11,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@superset/ui/tooltip";
 import { cn } from "@superset/ui/utils";
 import { useMatchRoute, useNavigate } from "@tanstack/react-router";
 import { useFeatureFlagEnabled } from "posthog-js/react";
+import { env } from "renderer/env.renderer";
 import { HiMiniPlus, HiOutlineClipboardDocumentList } from "react-icons/hi2";
 import {
 	LuClock,
@@ -58,7 +59,7 @@ export function DashboardSidebarHeader({
 		FEATURE_FLAGS.AUTOMATIONS_ACCESS,
 	);
 	const plan = useCurrentPlan();
-	const showAutomations = automationsFlagEnabled && isPaidPlan(plan);
+	const showAutomations = env.FORCE_PRO_FEATURES || (automationsFlagEnabled && isPaidPlan(plan));
 
 	const {
 		tab: lastTab,

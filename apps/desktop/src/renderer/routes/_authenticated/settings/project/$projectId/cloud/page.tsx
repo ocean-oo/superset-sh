@@ -1,6 +1,7 @@
 import { FEATURE_FLAGS } from "@superset/shared/constants";
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useFeatureFlagEnabled } from "posthog-js/react";
+import { env } from "renderer/env.renderer";
 
 export const Route = createFileRoute(
 	"/_authenticated/settings/project/$projectId/cloud/",
@@ -10,7 +11,7 @@ export const Route = createFileRoute(
 
 function CloudSettingsIndex() {
 	const { projectId } = Route.useParams();
-	const hasCloudAccess = useFeatureFlagEnabled(FEATURE_FLAGS.CLOUD_ACCESS);
+	const hasCloudAccess = env.FORCE_PRO_FEATURES || useFeatureFlagEnabled(FEATURE_FLAGS.CLOUD_ACCESS);
 
 	if (!hasCloudAccess) {
 		return (

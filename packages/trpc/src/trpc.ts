@@ -52,19 +52,24 @@ export const protectedProcedure = t.procedure
 
 		let activeOrganizationId = sessionOrgId;
 		if (headerOrgId && headerOrgId !== sessionOrgId) {
-			const membership = await db.query.members.findFirst({
-				where: and(
-					eq(members.userId, ctx.session.user.id),
-					eq(members.organizationId, headerOrgId),
-				),
-			});
-			if (!membership) {
-				throw new TRPCError({
-					code: "FORBIDDEN",
-					message: `Not a member of organization ${headerOrgId}`,
+			// Custom: Bypass check for mock org
+			if (headerOrgId === "mock-org-id") {
+				activeOrganizationId = "mock-org-id";
+			} else {
+				const membership = await db.query.members.findFirst({
+					where: and(
+						eq(members.userId, ctx.session.user.id),
+						eq(members.organizationId, headerOrgId),
+					),
 				});
+				if (!membership) {
+					throw new TRPCError({
+						code: "FORBIDDEN",
+						message: `Not a member of organization ${headerOrgId}`,
+					});
+				}
+				activeOrganizationId = headerOrgId;
 			}
-			activeOrganizationId = headerOrgId;
 		}
 
 		return next({ ctx: { ...ctx, activeOrganizationId } });

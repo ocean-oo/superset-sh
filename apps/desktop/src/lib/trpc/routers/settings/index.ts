@@ -268,7 +268,7 @@ export const createSettingsRouter = () => {
 			}
 			return getNormalizedTerminalPresets();
 		}),
-		getAgentPresets: publicProcedure.query(() => getResolvedAgentPresets()),
+		getAgentPresets: publicProcedure.query(() => getResolvedAgentPresets().filter(p => p.id !== "superset-chat")),
 		createCustomAgent: publicProcedure
 			.input(createCustomAgentInputSchema)
 			.mutation(({ input }) => {

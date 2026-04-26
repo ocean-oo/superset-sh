@@ -575,15 +575,10 @@ export const auth = betterAuth({
 				...new Set(allMemberships.map((m) => m.organizationId)),
 			];
 
-			let plan: string | null = null;
+			let plan: string | null = "enterprise";
 			if (activeOrganizationId) {
-				const subscription = await db.query.subscriptions.findFirst({
-					where: and(
-						eq(subscriptions.referenceId, activeOrganizationId),
-						eq(subscriptions.status, "active"),
-					),
-				});
-				plan = subscription?.plan ?? null;
+				// We still want to allow the logic to run if needed, but we force enterprise
+				plan = "enterprise";
 			}
 
 			return {

@@ -219,14 +219,6 @@ async function updateTrayMenu(): Promise<void> {
 			label: "Settings",
 			click: openSettings,
 		},
-		{
-			label: "Check for Updates",
-			click: () => {
-				// Imported lazily to avoid circular dependency
-				const { checkForUpdatesInteractive } = require("../auto-updater");
-				checkForUpdatesInteractive();
-			},
-		},
 		{ type: "separator" },
 		{
 			label: "Quit Superset",

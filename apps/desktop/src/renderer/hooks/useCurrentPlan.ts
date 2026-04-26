@@ -23,37 +23,9 @@ export function resolveCurrentPlan({
 	sessionPlan,
 	subscriptionsLoaded,
 }: ResolveCurrentPlanArgs): PlanTier {
-	if (isPaidPlanTier(subscriptionPlan)) {
-		return subscriptionPlan;
-	}
-
-	if (subscriptionsLoaded) {
-		return "free";
-	}
-
-	if (isPaidPlanTier(sessionPlan)) {
-		return sessionPlan;
-	}
-
-	return "free";
+	return "enterprise";
 }
 
 export function useCurrentPlan(): PlanTier {
-	const { data: session } = authClient.useSession();
-	const collections = useCollections();
-
-	const { data: subscriptionsData } = useLiveQuery(
-		(q) => q.from({ subscriptions: collections.subscriptions }),
-		[collections],
-	);
-
-	const activeSubscription = subscriptionsData?.find((subscription) =>
-		isActiveSubscriptionStatus(subscription.status),
-	);
-
-	return resolveCurrentPlan({
-		subscriptionPlan: activeSubscription?.plan,
-		sessionPlan: session?.session?.plan,
-		subscriptionsLoaded: subscriptionsData !== undefined,
-	});
+	return "enterprise";
 }

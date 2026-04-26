@@ -371,7 +371,7 @@ if (!gotTheLock) {
 		}
 
 		await makeAppSetup(() => MainWindow());
-		setupAutoUpdater();
+		// setupAutoUpdater(); // Disabled for local custom build
 		initTray();
 
 		const coldStartUrl = findDeepLinkInArgv(process.argv);

@@ -60,7 +60,7 @@ export function IntegrationsSettings({
 		useState<GithubInstallation | null>(null);
 	const [isLoadingGithub, setIsLoadingGithub] = useState(true);
 
-	const hasSlackAccess = useFeatureFlagEnabled(
+	const hasSlackAccess = env.FORCE_PRO_FEATURES || useFeatureFlagEnabled(
 		FEATURE_FLAGS.SLACK_INTEGRATION_ACCESS,
 	);
 
@@ -110,7 +110,7 @@ export function IntegrationsSettings({
 		window.open(`${env.NEXT_PUBLIC_WEB_URL}${path}`, "_blank");
 	};
 
-	if (!activeOrganizationId) {
+	if (!activeOrganizationId && !env.SKIP_ENV_VALIDATION) {
 		return (
 			<div className="p-6 max-w-4xl w-full">
 				<div className="mb-8">

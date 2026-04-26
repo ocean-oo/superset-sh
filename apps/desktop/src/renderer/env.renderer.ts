@@ -51,12 +51,14 @@ const rawEnv = {
 };
 
 // Only allow skipping validation in development (never in production)
-const SKIP_ENV_VALIDATION =
-	process.env.NODE_ENV === "development" && !!process.env.SKIP_ENV_VALIDATION;
+// Custom: Set to false to allow normal auth, but force pro features.
+const SKIP_ENV_VALIDATION = false;
+const FORCE_PRO_FEATURES = true;
 
 export const env = {
 	...(SKIP_ENV_VALIDATION
 		? (rawEnv as z.infer<typeof envSchema>)
 		: envSchema.parse(rawEnv)),
 	SKIP_ENV_VALIDATION,
+	FORCE_PRO_FEATURES,
 };

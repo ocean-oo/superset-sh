@@ -5,6 +5,7 @@ import { useFeatureFlagEnabled } from "posthog-js/react";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { authClient } from "renderer/lib/auth-client";
 import { electronTrpc } from "renderer/lib/electron-trpc";
+import { env } from "renderer/env.renderer";
 import { useCreateWorkspace } from "renderer/react-query/workspaces/useCreateWorkspace";
 import { useDeleteWorkspace } from "renderer/react-query/workspaces/useDeleteWorkspace";
 import { useUpdateWorkspace } from "renderer/react-query/workspaces/useUpdateWorkspace";
@@ -34,7 +35,7 @@ export function useCommandWatcher() {
 	);
 
 	const organizationId = session?.session?.activeOrganizationId;
-	const remoteAgentDisabled = useFeatureFlagEnabled(
+	const remoteAgentDisabled = env.FORCE_PRO_FEATURES ? false : useFeatureFlagEnabled(
 		FEATURE_FLAGS.DISABLE_REMOTE_AGENT,
 	);
 	const shouldWatch = !!deviceInfo && !!organizationId && !remoteAgentDisabled;

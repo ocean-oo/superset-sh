@@ -142,18 +142,6 @@ const SECTION_GROUPS: SectionGroup[] = [
 				label: "Integrations",
 				icon: <HiOutlinePuzzlePiece className="h-4 w-4" />,
 			},
-			{
-				id: "/settings/billing",
-				section: "billing",
-				label: "Billing",
-				icon: <HiOutlineCreditCard className="h-4 w-4" />,
-			},
-			{
-				id: "/settings/api-keys",
-				section: "apikeys",
-				label: "API Keys",
-				icon: <HiOutlineKey className="h-4 w-4" />,
-			},
 		],
 	},
 	{

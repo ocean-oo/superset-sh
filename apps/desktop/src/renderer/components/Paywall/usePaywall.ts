@@ -1,5 +1,6 @@
 import { useCurrentPlan } from "renderer/hooks/useCurrentPlan";
 import { authClient } from "renderer/lib/auth-client";
+import { env } from "renderer/env.renderer";
 import type { GatedFeature } from "./constants";
 import { paywall } from "./Paywall";
 
@@ -9,7 +10,7 @@ export function usePaywall() {
 
 	function hasAccess(feature: GatedFeature): boolean {
 		void feature;
-		return userPlan === "pro" || userPlan === "enterprise";
+		return env.FORCE_PRO_FEATURES || userPlan === "pro" || userPlan === "enterprise";
 	}
 
 	function gateFeature(

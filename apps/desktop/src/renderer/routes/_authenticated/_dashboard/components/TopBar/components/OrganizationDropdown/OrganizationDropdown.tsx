@@ -177,10 +177,6 @@ export function OrganizationDropdown({
 				<DropdownMenuSeparator />
 
 				{/* Help & Support */}
-				<DropdownMenuItem onClick={() => openExternal(COMPANY.DOCS_URL)}>
-					<HiOutlineBookOpen className="h-4 w-4" />
-					Documentation
-				</DropdownMenuItem>
 				<DropdownMenuItem
 					onClick={() => navigate({ to: "/settings/keyboard" })}
 				>
@@ -190,35 +186,6 @@ export function OrganizationDropdown({
 						<DropdownMenuShortcut>{shortcutsHotkey}</DropdownMenuShortcut>
 					)}
 				</DropdownMenuItem>
-				<DropdownMenuItem
-					onClick={() => openExternal(COMPANY.REPORT_ISSUE_URL)}
-				>
-					<IoBugOutline className="h-4 w-4" />
-					Report Issue
-				</DropdownMenuItem>
-				<DropdownMenuSub>
-					<DropdownMenuSubTrigger>
-						<HiOutlineChatBubbleLeftRight className="h-4 w-4" />
-						Contact Us
-					</DropdownMenuSubTrigger>
-					<DropdownMenuSubContent sideOffset={8} className="w-56">
-						<DropdownMenuItem onClick={() => openExternal(COMPANY.GITHUB_URL)}>
-							<FaGithub className="h-4 w-4" />
-							GitHub
-						</DropdownMenuItem>
-						<DropdownMenuItem onClick={() => openExternal(COMPANY.DISCORD_URL)}>
-							<FaDiscord className="h-4 w-4" />
-							Discord
-						</DropdownMenuItem>
-						<DropdownMenuItem onClick={() => openExternal(COMPANY.X_URL)}>
-							<FaXTwitter className="h-4 w-4" />X
-						</DropdownMenuItem>
-						<DropdownMenuItem onClick={() => openExternal(COMPANY.MAIL_TO)}>
-							<HiOutlineEnvelope className="h-4 w-4" />
-							Email Founders
-						</DropdownMenuItem>
-					</DropdownMenuSubContent>
-				</DropdownMenuSub>
 
 				<DropdownMenuSeparator />
 

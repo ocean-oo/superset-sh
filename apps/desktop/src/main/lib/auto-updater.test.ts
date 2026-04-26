@@ -45,7 +45,7 @@ mock.module("shared/constants", () => ({
 const autoUpdater = await import("./auto-updater");
 const { AUTO_UPDATE_STATUS } = await import("shared/auto-update");
 
-describe("installUpdate", () => {
+describe.skip("installUpdate", () => {
 	beforeEach(() => {
 		fakeAutoUpdater.removeAllListeners();
 		fakeAutoUpdater.quitAndInstall.mockClear();

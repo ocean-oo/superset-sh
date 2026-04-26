@@ -6,6 +6,9 @@ import { env } from "../env.renderer";
 export const posthog = posthogFull as unknown as PostHog;
 
 export function initPostHog() {
+	// Custom: Disable PostHog for local-only enterprise build
+	return;
+
 	if (!env.NEXT_PUBLIC_POSTHOG_KEY) {
 		console.log("[posthog] No key configured, skipping");
 		return;
